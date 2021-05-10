@@ -38,6 +38,7 @@ cleaned_dates = []
 for i in date_row:
     x = str(i).replace(' 00:00:00', '')
     cleaned_dates.append(x)
+
 #Now that the dates are saved, the row is dropped.
 transposed_london.drop('Unnamed: 0', axis=0, inplace=True)
 
@@ -55,7 +56,28 @@ transposed_london.drop('England', axis=0, inplace=True)
 #Now that only the desired rows remain in transposed_london, create a new dataframe that only compares
 #the first and last values, from which to determine growth
 borough_growth = transposed_london.loc[:,['1995-01-01', '2021-02-01']]
-#print(start_end_averages)
+
 borough_growth['Growth'] = borough_growth['2021-02-01'] - borough_growth['1995-01-01']
 borough_growth = borough_growth.sort_values(by='Growth', ascending=False)
-print(borough_growth)
+
+#This is one calculation. I'll see if a calculated average of 1995 and 2021 changes things.
+average_1995 = []
+average_2021 = []
+for i in transposed_london.columns:
+    if '1995' in i:
+        average_1995.append(i)
+    if '2021' in i:
+        average_2021.append(i)
+london_1995 = transposed_london[average_1995]
+london_2021 = transposed_london[average_2021]
+
+#Calculating averages for 1995 and 2021 respectively
+london_1995['Yearly_Average_1995'] = london_1995.sum(axis=1)/12
+london_2021['Yearly_Average_2021'] = london_2021.sum(axis=1)/2
+
+#Creating average growth column showing the differences between 2021 and 1995 averages
+borough_growth['Average Growth'] = london_2021['Yearly_Average_2021'] - london_1995['Yearly_Average_1995']
+sorted_by_average_growth = borough_growth.sort_values(by='Average Growth', ascending=False)
+sorted_by_latest_data = borough_growth.sort_values(by='2021-02-01', ascending=False)
+sorted_by_oldest_data = borough_growth.sort_values(by='1995-01-01', ascending=False)
+print(sorted_by_average_growth)
