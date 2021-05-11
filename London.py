@@ -62,21 +62,31 @@ borough_growth = borough_growth.sort_values(by='Growth', ascending=False)
 
 #This is one calculation. I'll see if a calculated average of 1995 and 2021 changes things.
 average_1995 = []
+average_2020 = []
 average_2021 = []
 for i in transposed_london.columns:
     if '1995' in i:
         average_1995.append(i)
+    if '2020' in i:
+        average_2020.append(i)
     if '2021' in i:
         average_2021.append(i)
 london_1995 = transposed_london[average_1995]
+london_2020 = transposed_london[average_2020]
 london_2021 = transposed_london[average_2021]
 
 #Calculating averages for 1995 and 2021 respectively
 london_1995['Yearly_Average_1995'] = london_1995.sum(axis=1)/12
+london_2020['Yearly_Average_2020'] = london_2020.sum(axis=1)/12
 london_2021['Yearly_Average_2021'] = london_2021.sum(axis=1)/2
 
-#Creating average growth column showing the differences between 2021 and 1995 averages
-borough_growth['Average Growth'] = london_2021['Yearly_Average_2021'] - london_1995['Yearly_Average_1995']
+#Creating average growth column showing the differences between 2020 and 1995 averages
+#The commented-out code below would compare the yearly average for 2021 with 1995, but given the year's
+#data is not complete, it seems more precise to compare with a completed year, hence 2020 is compared instead.
+
+#borough_growth['Average Growth'] = london_2021['Yearly_Average_2021'] - london_1995['Yearly_Average_1995']
+
+borough_growth['Average Growth'] = london_2020['Yearly_Average_2020'] - london_1995['Yearly_Average_1995']
 sorted_by_average_growth = borough_growth.sort_values(by='Average Growth', ascending=False)
 sorted_by_latest_data = borough_growth.sort_values(by='2021-02-01', ascending=False)
 sorted_by_oldest_data = borough_growth.sort_values(by='1995-01-01', ascending=False)
